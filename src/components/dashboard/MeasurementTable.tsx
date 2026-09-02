@@ -30,6 +30,7 @@ export function MeasurementTable({ measurements }: { measurements: Measurement[]
                   day: "2-digit",
                   month: "short",
                   year: "numeric",
+                  timeZone: "UTC",
                 })}
               </td>
               <td className="py-3 pr-4">{m.weight.toFixed(1)} kg</td>
