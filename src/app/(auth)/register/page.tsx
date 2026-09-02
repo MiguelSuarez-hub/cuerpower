@@ -36,13 +36,10 @@ export default function RegisterPage() {
         />
         <div className="grid grid-cols-2 gap-4">
           <Input
-            id="age"
-            name="age"
-            type="number"
-            label="Edad"
-            placeholder="25"
-            min={10}
-            max={100}
+            id="birthDate"
+            name="birthDate"
+            type="date"
+            label="Fecha de nacimiento"
             required
           />
           <Input
@@ -56,6 +53,27 @@ export default function RegisterPage() {
             required
           />
         </div>
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="sex" className="text-sm font-medium text-zinc-700">
+            Sexo
+          </label>
+          <select
+            id="sex"
+            name="sex"
+            required
+            defaultValue=""
+            className="h-11 rounded-lg border border-zinc-300 px-3.5 text-sm text-zinc-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+          >
+            <option value="" disabled>
+              Selecciona una opción
+            </option>
+            <option value="MALE">Masculino</option>
+            <option value="FEMALE">Femenino</option>
+          </select>
+          <p className="text-xs text-zinc-500">
+            Se usa para calcular tu rango saludable de grasa corporal.
+          </p>
+        </div>
         {state?.error && <p className="text-sm text-rose-600">{state.error}</p>}
         <Button type="submit" disabled={pending} className="mt-2 w-full">
           {pending ? "Creando cuenta..." : "Crear cuenta"}
@@ -64,7 +82,7 @@ export default function RegisterPage() {
 
       <p className="mt-6 text-center text-sm text-zinc-600">
         ¿Ya tienes cuenta?{" "}
-        <Link href="/login" className="font-medium text-emerald-600 hover:text-emerald-700">
+        <Link href="/login" className="font-medium text-teal-600 hover:text-teal-700">
           Inicia sesión
         </Link>
       </p>

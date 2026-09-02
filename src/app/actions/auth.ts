@@ -4,6 +4,9 @@ import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { signIn, signOut } from "@/auth";
+import { calculateAge } from "@/lib/age";
+
+const SEX_VALUES = new Set(["MALE", "FEMALE"]);
 
 export type AuthFormState = { error?: string } | undefined;
 
@@ -16,7 +19,8 @@ export async function registerAction(
     .trim()
     .toLowerCase();
   const password = String(formData.get("password") ?? "");
-  const age = Number(formData.get("age"));
+  const birthDateValue = String(formData.get("birthDate") ?? "");
+  const sex = String(formData.get("sex") ?? "");
   const height = Number(formData.get("height"));
 
   if (!name || !email || !password) {
@@ -25,8 +29,17 @@ export async function registerAction(
   if (password.length < 8) {
     return { error: "La contraseña debe tener al menos 8 caracteres." };
   }
-  if (!Number.isFinite(age) || age < 10 || age > 100) {
-    return { error: "Ingresa una edad válida." };
+
+  const birthDate = birthDateValue ? new Date(birthDateValue) : null;
+  if (!birthDate || Number.isNaN(birthDate.getTime()) || birthDate.getTime() > Date.now()) {
+    return { error: "Ingresa una fecha de nacimiento válida." };
+  }
+  const age = calculateAge(birthDate);
+  if (age < 10 || age > 100) {
+    return { error: "Ingresa una fecha de nacimiento válida." };
+  }
+  if (!SEX_VALUES.has(sex)) {
+    return { error: "Selecciona tu sexo." };
   }
   if (!Number.isFinite(height) || height < 100 || height > 250) {
     return { error: "Ingresa una altura válida en centímetros." };
@@ -45,7 +58,7 @@ export async function registerAction(
       email,
       passwordHash,
       profile: {
-        create: { age, height },
+        create: { birthDate, sex: sex as "MALE" | "FEMALE", height },
       },
     },
   });
