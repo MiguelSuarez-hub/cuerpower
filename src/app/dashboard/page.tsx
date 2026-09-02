@@ -7,7 +7,9 @@ import { WeightChart } from "@/components/dashboard/WeightChart";
 import { MeasurementTable } from "@/components/dashboard/MeasurementTable";
 import { AddMeasurementForm } from "@/components/dashboard/AddMeasurementForm";
 import { HealthInsight } from "@/components/dashboard/HealthInsight";
+import { ProfileCard } from "@/components/dashboard/ProfileCard";
 import { bmiCategory } from "@/lib/bmi";
+import { calculateAge } from "@/lib/age";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -45,6 +47,14 @@ export default async function DashboardPage() {
           value={latest?.bodyFatPct ? `${latest.bodyFatPct.toFixed(1)}%` : "—"}
         />
       </div>
+
+      {profile && (
+        <ProfileCard
+          birthDate={profile.birthDate ? profile.birthDate.toISOString().slice(0, 10) : null}
+          age={profile.birthDate ? calculateAge(profile.birthDate) : null}
+          sex={profile.sex}
+        />
+      )}
 
       {latest && profile && (
         <HealthInsight

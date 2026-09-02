@@ -4,8 +4,13 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/Card";
 import { GroupLeaderboard } from "@/components/groups/GroupLeaderboard";
+import { WeeklyLeaderboard } from "@/components/groups/WeeklyLeaderboard";
+import { PendingActivityCard } from "@/components/groups/PendingActivityCard";
+import { ResubmitActivityForm } from "@/components/groups/ResubmitActivityForm";
+import { SubmitActivityForm } from "@/components/groups/SubmitActivityForm";
 import { getCurrentMonthRange } from "@/lib/period";
 import { rankByMetric } from "@/lib/leaderboard";
+import { getPreviousWeekRange, getWeekRange, rankByActivityCount } from "@/lib/week";
 import { leaveGroupAction } from "@/app/actions/groups";
 
 export default async function GroupPage({
@@ -59,6 +64,42 @@ export default async function GroupPage({
     timeZone: "UTC",
   });
 
+  const currentWeek = getWeekRange();
+  const previousWeek = getPreviousWeekRange();
+
+  const activities = await prisma.activity.findMany({
+    where: { groupId, date: { gte: previousWeek.start, lte: currentWeek.end } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const memberNameById = new Map(
+    group.members.map((member) => [member.userId, member.user.name ?? member.user.email]),
+  );
+
+  const currentWeekApproved = activities.filter(
+    (activity) =>
+      activity.status === "APPROVED" &&
+      activity.date.getTime() >= currentWeek.start.getTime() &&
+      activity.date.getTime() <= currentWeek.end.getTime(),
+  );
+
+  const weeklyRanking = rankByActivityCount(
+    group.members.map((member) => {
+      const approved = currentWeekApproved.filter((activity) => activity.userId === member.userId);
+      return {
+        userId: member.userId,
+        name: member.user.name ?? member.user.email,
+        approvedCount: approved.length,
+        approvedMinutes: approved.reduce((sum, activity) => sum + activity.durationMin, 0),
+      };
+    }),
+  );
+
+  const pendingForReview = activities.filter((activity) => activity.status === "PENDING");
+  const myRejected = activities.filter(
+    (activity) => activity.status === "REJECTED" && activity.userId === session.user.id,
+  );
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -88,6 +129,55 @@ export default async function GroupPage({
         <GroupLeaderboard title="IMC" unit="" entries={bmiRanking} />
         <GroupLeaderboard title="Grasa corporal" unit="%" entries={bodyFatRanking} />
       </div>
+
+      <WeeklyLeaderboard entries={weeklyRanking} />
+
+      <Card>
+        <h2 className="text-base font-semibold text-zinc-900">Actividades pendientes de revisión</h2>
+        {pendingForReview.length === 0 ? (
+          <p className="mt-4 text-sm text-zinc-500">No hay actividades pendientes.</p>
+        ) : (
+          <div className="mt-4 flex flex-col gap-3">
+            {pendingForReview.map((activity) => (
+              <PendingActivityCard
+                key={activity.id}
+                id={activity.id}
+                authorName={memberNameById.get(activity.userId) ?? "Miembro"}
+                type={activity.type}
+                durationMin={activity.durationMin}
+                date={activity.date.toISOString()}
+                evidenceUrl={activity.evidenceUrl}
+                canReview={activity.userId !== session.user.id}
+              />
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {myRejected.length > 0 && (
+        <Card>
+          <h2 className="text-base font-semibold text-zinc-900">Tus actividades rechazadas</h2>
+          <p className="mt-1 text-sm text-zinc-600">Puedes editarlas y volver a enviarlas.</p>
+          <div className="mt-4 flex flex-col gap-3">
+            {myRejected.map((activity) => (
+              <ResubmitActivityForm
+                key={activity.id}
+                id={activity.id}
+                type={activity.type}
+                durationMin={activity.durationMin}
+                evidenceUrl={activity.evidenceUrl}
+              />
+            ))}
+          </div>
+        </Card>
+      )}
+
+      <Card>
+        <h2 className="text-base font-semibold text-zinc-900">Subir actividad</h2>
+        <div className="mt-4">
+          <SubmitActivityForm groupId={group.id} />
+        </div>
+      </Card>
 
       <form action={leaveGroupAction}>
         <input type="hidden" name="groupId" value={group.id} />
