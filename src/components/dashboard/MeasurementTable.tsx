@@ -1,3 +1,5 @@
+import { DeleteMeasurementButton } from "./DeleteMeasurementButton";
+
 type Measurement = {
   id: string;
   date: string;
@@ -19,7 +21,8 @@ export function MeasurementTable({ measurements }: { measurements: Measurement[]
             <th className="py-2 pr-4 font-medium">Fecha</th>
             <th className="py-2 pr-4 font-medium">Peso</th>
             <th className="py-2 pr-4 font-medium">IMC</th>
-            <th className="py-2 font-medium">Grasa corporal</th>
+            <th className="py-2 pr-4 font-medium">Grasa corporal</th>
+            <th className="py-2 font-medium"></th>
           </tr>
         </thead>
         <tbody>
@@ -35,7 +38,10 @@ export function MeasurementTable({ measurements }: { measurements: Measurement[]
               </td>
               <td className="py-3 pr-4">{m.weight.toFixed(1)} kg</td>
               <td className="py-3 pr-4">{m.bmi.toFixed(1)}</td>
-              <td className="py-3">{m.bodyFatPct ? `${m.bodyFatPct.toFixed(1)}%` : "—"}</td>
+              <td className="py-3 pr-4">{m.bodyFatPct ? `${m.bodyFatPct.toFixed(1)}%` : "—"}</td>
+              <td className="py-3">
+                <DeleteMeasurementButton id={m.id} />
+              </td>
             </tr>
           ))}
         </tbody>

@@ -51,3 +51,21 @@ export async function addMeasurementAction(
 
   revalidatePath("/dashboard");
 }
+
+export async function deleteMeasurementAction(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return;
+  }
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) {
+    return;
+  }
+
+  await prisma.measurement.deleteMany({
+    where: { id, userId: session.user.id },
+  });
+
+  revalidatePath("/dashboard");
+}
