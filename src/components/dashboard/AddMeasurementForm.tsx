@@ -17,6 +17,7 @@ export function AddMeasurementForm() {
         label="Fecha"
         type="date"
         defaultValue={today}
+        max={today}
         required
       />
       <Input
