@@ -23,8 +23,10 @@ model User {
   profile      Profile?
   measurements Measurement[]
 
-  ownedGroups       Group[]       @relation("GroupOwner")
-  groupMemberships  GroupMember[]
+  ownedGroups        Group[]       @relation("GroupOwner")
+  groupMemberships   GroupMember[]
+  activities         Activity[]
+  reviewedActivities Activity[]    @relation("ActivityReviewer")
 }
 
 enum Sex {
@@ -73,7 +75,8 @@ model Group {
   ownerId String
   owner   User   @relation("GroupOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
-  members GroupMember[]
+  members    GroupMember[]
+  activities Activity[]
 }
 
 model GroupMember {
@@ -87,4 +90,40 @@ model GroupMember {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([groupId, userId])
+}
+
+enum ActivityType {
+  WALK
+  RUN
+  GYM
+  SWIM
+}
+
+enum ActivityStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Activity {
+  id          String         @id @default(cuid())
+  type        ActivityType
+  durationMin Int
+  evidenceUrl String
+  date        DateTime
+  status      ActivityStatus @default(PENDING)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  reviewedById String?
+  reviewedBy   User?   @relation("ActivityReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([groupId, date])
 }
