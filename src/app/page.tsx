@@ -1,67 +1,61 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+
+const features = [
+  {
+    title: "Peso",
+    description: "Registra tu peso corporal y visualiza tu progreso a lo largo del tiempo.",
+  },
+  {
+    title: "IMC",
+    description: "Calculamos tu Índice de Masa Corporal automáticamente en cada registro.",
+  },
+  {
+    title: "Grasa corporal",
+    description: "Lleva el control de tu porcentaje de grasa corporal cuando lo midas.",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex w-full max-w-3xl flex-1 flex-col items-center justify-between bg-white px-16 py-32 sm:items-start dark:bg-black">
-        <Image
-          className="h-5 w-[100px] dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl leading-10 font-semibold tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-1 flex-col bg-zinc-50">
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-6">
+        <span className="text-lg font-semibold tracking-tight text-zinc-900">CuerPower</span>
+        <nav className="flex items-center gap-3">
+          <Link href="/login" className="text-sm font-medium text-zinc-600 hover:text-zinc-900">
+            Iniciar sesión
+          </Link>
+          <Link href="/register">
+            <Button>Crear cuenta</Button>
+          </Link>
+        </nav>
+      </header>
+
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-6 py-20 text-center">
+        <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl">
+          Seguimiento de peso, IMC y grasa corporal en un solo lugar
+        </h1>
+        <p className="mt-5 max-w-xl text-lg text-zinc-600">
+          Registra tus mediciones, calcula tu IMC automáticamente y observa tu progreso a lo largo
+          del tiempo.
+        </p>
+        <div className="mt-8 flex items-center gap-4">
+          <Link href="/register">
+            <Button>Comenzar gratis</Button>
+          </Link>
+          <Link href="/login">
+            <Button variant="ghost">Ya tengo cuenta</Button>
+          </Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="bg-foreground text-background flex h-12 w-full items-center justify-center gap-2 rounded-full px-5 transition-colors hover:bg-[#383838] md:w-[158px] dark:hover:bg-[#ccc]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="h-[14px] w-4 dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] md:w-[158px] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="mt-24 grid w-full gap-6 sm:grid-cols-3">
+          {features.map((feature) => (
+            <Card key={feature.title} className="text-left">
+              <h2 className="text-base font-semibold text-zinc-900">{feature.title}</h2>
+              <p className="mt-2 text-sm text-zinc-600">{feature.description}</p>
+            </Card>
+          ))}
         </div>
       </main>
     </div>
