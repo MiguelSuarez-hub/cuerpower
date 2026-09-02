@@ -6,6 +6,7 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { WeightChart } from "@/components/dashboard/WeightChart";
 import { MeasurementTable } from "@/components/dashboard/MeasurementTable";
 import { AddMeasurementForm } from "@/components/dashboard/AddMeasurementForm";
+import { HealthInsight } from "@/components/dashboard/HealthInsight";
 import { bmiCategory } from "@/lib/bmi";
 
 export default async function DashboardPage() {
@@ -14,10 +15,13 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const measurements = await prisma.measurement.findMany({
-    where: { userId: session.user.id },
-    orderBy: { date: "asc" },
-  });
+  const [measurements, profile] = await Promise.all([
+    prisma.measurement.findMany({
+      where: { userId: session.user.id },
+      orderBy: { date: "asc" },
+    }),
+    prisma.profile.findUnique({ where: { userId: session.user.id } }),
+  ]);
 
   const latest = measurements[measurements.length - 1];
   const category = latest ? bmiCategory(latest.bmi) : null;
@@ -41,6 +45,15 @@ export default async function DashboardPage() {
           value={latest?.bodyFatPct ? `${latest.bodyFatPct.toFixed(1)}%` : "—"}
         />
       </div>
+
+      {latest && profile && (
+        <HealthInsight
+          heightCm={profile.height}
+          currentWeightKg={latest.weight}
+          sex={profile.sex}
+          currentBodyFatPct={latest.bodyFatPct ?? undefined}
+        />
+      )}
 
       <Card>
         <h2 className="text-base font-semibold text-zinc-900">Evolución del peso</h2>
