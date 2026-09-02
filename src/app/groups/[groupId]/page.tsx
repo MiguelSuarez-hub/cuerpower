@@ -73,7 +73,7 @@ export default async function GroupPage({
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm font-medium text-zinc-500">Código de invitación</p>
-            <p className="mt-1 font-mono text-lg tracking-widest text-zinc-900">
+            <p className="mt-1 inline-block rounded-lg bg-fuchsia-50 px-3 py-1 font-mono text-lg tracking-widest text-fuchsia-700">
               {group.inviteCode}
             </p>
           </div>

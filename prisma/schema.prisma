@@ -27,11 +27,17 @@ model User {
   groupMemberships  GroupMember[]
 }
 
+enum Sex {
+  MALE
+  FEMALE
+}
+
 model Profile {
-  id     String @id @default(cuid())
-  age    Int
+  id        String    @id @default(cuid())
+  birthDate DateTime?
+  sex       Sex?
   // altura en centimetros
-  height Float
+  height    Float
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

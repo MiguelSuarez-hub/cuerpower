@@ -21,7 +21,15 @@ export function GroupLeaderboard({ title, unit, entries }: GroupLeaderboardProps
               className="flex items-center justify-between rounded-lg border border-zinc-100 px-3 py-2 text-sm"
             >
               <span className="flex items-center gap-3">
-                <span className="w-5 text-zinc-400">{index + 1}</span>
+                <span
+                  className={
+                    index === 0
+                      ? "flex h-5 w-5 items-center justify-center rounded-full bg-fuchsia-100 text-xs font-semibold text-fuchsia-700"
+                      : "w-5 text-zinc-400"
+                  }
+                >
+                  {index + 1}
+                </span>
                 <span className="font-medium text-zinc-900">{entry.name}</span>
               </span>
               <span
