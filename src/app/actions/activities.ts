@@ -4,21 +4,18 @@ import { put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { ActivityType } from "@/generated/prisma/enums";
 
 export type ActivityFormState = { error?: string } | undefined;
 
-const ACTIVITY_TYPES = new Set([
-  "WALK",
-  "RUN",
-  "GYM",
-  "SWIM",
-  "CYCLING",
-  "YOGA",
-  "PILATES",
-  "RUMBA",
-  "HIIT",
-  "FUTBOL",
-]);
+// Única fuente de verdad: los valores del enum generado desde
+// prisma/schema.prisma, para que un tipo nuevo no pueda quedar validado
+// aquí sin existir todavía en la base de datos (o viceversa).
+const ACTIVITY_TYPES = new Set<string>(Object.values(ActivityType));
+
+function isActivityType(value: string): value is ActivityType {
+  return ACTIVITY_TYPES.has(value);
+}
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_EVIDENCE_BYTES = 5 * 1024 * 1024;
 
@@ -72,7 +69,7 @@ export async function submitActivityAction(
   if (!groupId) {
     return { error: "Grupo inválido." };
   }
-  if (!ACTIVITY_TYPES.has(type)) {
+  if (!isActivityType(type)) {
     return { error: "Selecciona un tipo de actividad válido." };
   }
   if (durationMin === null) {
@@ -99,7 +96,7 @@ export async function submitActivityAction(
 
   await prisma.activity.create({
     data: {
-      type: type as "WALK" | "RUN" | "GYM" | "SWIM",
+      type,
       durationMin,
       date,
       evidenceUrl,
@@ -165,7 +162,7 @@ export async function resubmitActivityAction(
   const durationMin = parseDuration(formData.get("durationMin"));
   const evidence = formData.get("evidence");
 
-  if (!ACTIVITY_TYPES.has(type)) {
+  if (!isActivityType(type)) {
     return { error: "Selecciona un tipo de actividad válido." };
   }
   if (durationMin === null) {
@@ -189,7 +186,7 @@ export async function resubmitActivityAction(
   await prisma.activity.update({
     where: { id: activityId },
     data: {
-      type: type as "WALK" | "RUN" | "GYM" | "SWIM",
+      type,
       durationMin,
       evidenceUrl,
       status: "PENDING",

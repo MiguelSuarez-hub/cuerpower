@@ -97,6 +97,12 @@ enum ActivityType {
   RUN
   GYM
   SWIM
+  CYCLING
+  YOGA
+  PILATES
+  RUMBA
+  HIIT
+  FUTBOL
 }
 
 enum ActivityStatus {

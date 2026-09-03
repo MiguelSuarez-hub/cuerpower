@@ -1,0 +1,7 @@
+-- AlterEnum
+ALTER TYPE "ActivityType" ADD VALUE 'CYCLING';
+ALTER TYPE "ActivityType" ADD VALUE 'YOGA';
+ALTER TYPE "ActivityType" ADD VALUE 'PILATES';
+ALTER TYPE "ActivityType" ADD VALUE 'RUMBA';
+ALTER TYPE "ActivityType" ADD VALUE 'HIIT';
+ALTER TYPE "ActivityType" ADD VALUE 'FUTBOL';
