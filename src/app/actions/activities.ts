@@ -7,7 +7,18 @@ import { prisma } from "@/lib/prisma";
 
 export type ActivityFormState = { error?: string } | undefined;
 
-const ACTIVITY_TYPES = new Set(["WALK", "RUN", "GYM", "SWIM"]);
+const ACTIVITY_TYPES = new Set([
+  "WALK",
+  "RUN",
+  "GYM",
+  "SWIM",
+  "CYCLING",
+  "YOGA",
+  "PILATES",
+  "RUMBA",
+  "HIIT",
+  "FUTBOL",
+]);
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_EVIDENCE_BYTES = 5 * 1024 * 1024;
 
